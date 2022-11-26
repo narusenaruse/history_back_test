@@ -20,7 +20,7 @@ public class HistoryBackTestApplication {
 
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**").allowedOrigins("http://52.203.39.84");
+				registry.addMapping("/**").allowedOrigins("http://172.31.208.1");
 			}
 		};
 	}
