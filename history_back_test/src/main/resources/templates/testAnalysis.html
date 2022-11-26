@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>分析画面</title>
+		<style type="text/css">
+		
+			.textsize{
+				font-size: 20px;
+			}
+				
+			.th {
+			  width:  200px;
+			  height: 50px;
+			}
+			
+			.thFace {
+			  width:  50px;
+			  height: 50px;
+			}
+			
+		</style>
+	</head>
+	
+	<body>
+		<div id="main">
+		
+			<select name="migiue" id="eventId" class="textsize" >
+				<option value="">選択してください</option>
+				<option v-for="event in eventList" v-bind:value="event.eventId">{{ event.eventName }}　{{ event.eventDate }}</option>
+			</select>
+			
+			<button type="button" @click="barGraph()">表示</button>
+			
+			
+			
+			<select name="hidariue" id="eventId" class="textsize" >
+				<option value="">選択してください</option>
+				<option v-for="event in eventList" v-bind:value="event.eventId">{{ event.eventName }}　{{ event.eventDate }}</option>
+			</select>
+			
+			<button type="button" @click="barGraph()">表示</button>
+			
+			
+			
+			
+			<select name="migisita" id="eventId" class="textsize" >
+				<option value="">選択してください</option>
+				<option v-for="event in eventList" v-bind:value="event.eventId">{{ event.eventName }}　{{ event.eventDate }}</option>
+			</select>
+			
+			<button type="button" @click="barGraph()">表示</button>
+			
+			
+			
+			
+			<select name="hidarisita" id="eventId" class="textsize" >
+				<option value="">選択してください</option>
+				<option v-for="event in eventList" v-bind:value="event.eventId">{{ event.eventName }}　{{ event.eventDate }}</option>
+			</select>
+			
+			<button type="button" @click="barGraph()">表示</button>
+			
+			<div>
+				<table border="1">
+					<tr v-for="label in labelList">
+						<th class="th">{{ label }}</th>
+					</tr>
+					
+					<tr v-for="okCount in okList">
+						<td>{{ okCount }}</td>
+					</tr>
+				</table>
+				
+				<hr>
+				
+				<table border="1">
+					<tr v-for="label in labelList">
+						<th class="th">{{ label }}</th>
+					</tr>
+					
+					<tr v-for="ngCount in ngList">
+						<td>{{ ngCount }}</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		
+		<script src="https://unpkg.com/vue@next"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+		<script type="text/javascript">
+	
+			Vue.createApp({
+				data() {
+					return{
+						eventList:null,
+						okList:null,
+						ngList:null,
+						labelList:null
+					}
+				},
+				
+				
+				methods:{
+					barGraph(){
+						var jsonParam = new URLSearchParams();
+						jsonParam.append('eventId', document.getElementById('eventId').value);
+						axios.post('/analysis/init/bargraph', jsonParam)
+						.then(response => {
+							this.okList = response.data.okList;
+							this.ngList = response.data.ngList;
+							this.labelList = response.data.labelList;
+						})
+						
+						.catch(error => {
+							alert(error);
+						});
+					},
+					
+					//検索のリセット(画面リロードでmounted()呼び出し→初期表示)
+					reload(){
+						location.reload();
+					}
+				},
+				
+				//初期表示機能
+				mounted(){
+					axios.post('/analysis/init')
+					.then(response => {
+						this.eventList = response.data.eventList;
+					})
+					
+					.catch(error => {
+						alert(error);
+					});
+				}
+			}).mount('#main')
+		
+		</script>
+	</body>
+</html>

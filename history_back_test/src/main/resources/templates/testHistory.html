@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>履歴参照</title>
+		<style type="text/css">
+		
+			.textsize{
+				font-size: 20px;
+			}
+				
+			.th {
+			  width:  200px;
+			  height: 50px;
+			}
+			
+			.thFace {
+			  width:  50px;
+			  height: 50px;
+			}
+			
+		</style>
+	</head>
+	
+	<body>
+		<div id="main">
+			<div><h1>履歴一覧</h1></div>
+			
+			<div><h2>名前検索</h2></div>
+			
+			<div class="textsize">
+				<form>
+					名前:<input type="text" name="chooseConsumerFromName" id="chooseConsumerFromName" class="textsize" size="10"/>　
+					
+					<button type="button" class="textsize" @click="selectName()">検索</button>　
+					<button type="button" class="textsize" @click="reload()">元に戻す</button>
+				</form>
+					
+			</div>
+			
+			<hr>
+			
+			<div><h2>判定人数＆検索</h2></div>
+			<table border="1">
+				<tr>
+					<th class="th">
+						<!-- OKをクリックすると1を飛ばす -->
+						<button type="button" class="textsize" @click="selectCheckResult(1)">OK:{{ consumerOk }}人</button>
+					</th>
+					<!--  <th class="th">NG:{{ consumerNg }}人</th> -->
+					<th class="th">
+						<!-- NONEをクリックすると0を飛ばす -->
+						<button type="button" class="textsize" @click="selectCheckResult(0)">NONE:{{ consumerNone }}人</button>
+					</th>
+				</tr>
+			</table>
+			
+			<hr>
+			
+			<div><h2>参照</h2></div>
+			<table border="1">
+				<tr>
+					<th class="th">会員ID</th>
+					<th class="th">会員名</th>
+					<th class="th">判定</th>
+					<th class="th">確認時間</th>
+					<th class="thFace">顔写真</th>
+				</tr>
+				
+				<tr v-for="consumer in historyViewList">
+					
+					<td>{{ consumer.historyId }}</td>
+					<td>{{ consumer.consumerName }}</td>
+					<td>
+					<span v-if="consumer.checkResult==1">OK</span>
+					<span v-else-if="consumer.checkResult==0">NONE</span>
+					</td>
+					<td>  {{consumer.checkDate}} </td>
+					<td><img v-bind:src="consumer.picture" width="45" height="45"></td>
+					
+				</tr>
+			</table>
+		</div>
+		<script src="https://unpkg.com/vue@next"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+		<script type="text/javascript">
+	
+			Vue.createApp({
+				data() {
+					return{
+						historyViewList:null,
+						consumerOk:0,
+						//consumerNg:0,
+						consumerNone:0,
+					}
+				},
+				
+				
+				methods:{
+					
+					//名前検索機能
+					selectName(){
+						var jsonParam = new URLSearchParams();
+						jsonParam.append('chooseConsumerFromName', document.getElementById('chooseConsumerFromName').value);
+						
+						axios.post('/history/selectName', jsonParam)
+						.then(response => {
+							this.historyViewList = response.data.historyViewList;
+						})
+						
+						.catch(error => {
+							alert(error);
+						});
+					},
+					
+					//判定検索機能
+					selectCheckResult(CheckResult){
+						var jsonParam = new URLSearchParams();
+						jsonParam.append('chooseConsumerFromCheckResult', CheckResult);
+					
+						axios.post('/history/selectCheckResult', jsonParam)
+						.then(response => {
+							this.historyViewList = response.data.historyViewList;
+						})
+					
+						.catch(error => {
+							alert(error);
+						});
+					},
+
+					
+					//検索のリセット(画面リロードでmounted()呼び出し→初期表示)
+					reload(){
+						location.reload();
+					},
+					
+					//判定人数のカウント
+					count(){
+						this.consumerOk = 0;
+						//this.consumerNg = 0;
+						this.consumerNone= 0;
+						for(var consumer in this.historyViewList){
+							if(this.historyViewList[consumer].checkResult == 1){
+								this.consumerOk++;
+							/*
+							} else if(this.historyViewList[consumer].check_result == 0){
+								this.consumerNg++;
+							
+							}else{
+							*/
+							} else if(this.historyViewList[consumer].checkResult == 0){
+								this.consumerNone++;
+							}
+						}
+					}
+				},
+				
+				//初期表示機能
+				mounted(){
+					axios.post('/history/init')
+					.then(response => {
+						this.historyViewList = response.data.historyViewList;
+						this.count();
+					})
+					
+					.catch(error => {
+						alert(error);
+					});
+				}
+			}).mount('#main')
+		
+		</script>
+	</body>
+</html>

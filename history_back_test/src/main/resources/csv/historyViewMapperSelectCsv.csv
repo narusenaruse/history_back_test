@@ -1,0 +1,5 @@
+historyId,eventId,supplierId,consumerId,consumerName,consumerNameKana,checkResult,checkDate,picture
+1,1,1,1,テスト1,テストイチ,1,2021/10/07 16:18:48,img/test1.jpg
+2,1,1,1,テスト1,テストイチ,0,2021/10/07 16:18:48,img/test1.jpg
+3,2,1,1,テスト1,テストイチ,0,,
+4,2,1,1,テスト1,テストイチ,0,,

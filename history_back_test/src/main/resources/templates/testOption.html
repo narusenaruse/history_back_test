@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>設定画面</title>
+		<style type="text/css">
+		
+			.textsize{
+				font-size: 20px;
+			}
+		</style>
+	</head>
+	
+	<body>
+		<div id="main">
+			<div><h1>設定</h1></div>
+			
+			<div><h2>通知登録(Slack)</h2></div>
+			<div class="textsize"> {{ msg }} </div>
+			<div v-if="errorMap" v-for="(value, key) in errorMap">{{ value }}</div>
+			<form>
+				<div>URL:　　　<input type="text" id="slackUrl" class="textsize" v-model="slackUrl"/></div>
+				<div>ユーザー名: <input type="text" id="slackUserName" class="textsize" v-model="slackUserName"/></div>
+				<div>メッセージ・テンプレート: <input type="text" id="slackMsg" class="textsize" v-model="slackMsg"/></div>
+				
+				<div><button type="button" class="textsize" @click="insert()">設定</button></div>
+			</form>
+		</div>
+		
+		<script src="https://unpkg.com/vue@next"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+		<script type="text/javascript">
+	
+			Vue.createApp({
+				data() {
+					return{
+						msg:null,
+						slackUrl:null,
+						slackUserName:null,
+						slackMsg:null,
+						errorMap:null
+					}
+				},
+				
+				methods:{
+					
+					//登録機能
+					insert(){
+						this.msg = "";
+						var jsonParam = new URLSearchParams();
+						
+						jsonParam.append('slackUrl', this.slackUrl);
+						jsonParam.append('slackUserName', this.slackUserName);
+						jsonParam.append('slackMsg', this.slackMsg);
+						
+						axios.post('/option/slack/cooperate', jsonParam)
+						.then(response => {
+							if(response.data.errorMap){
+								// エラー
+								this.msg = null;
+								this.errorMap = response.data.errorMap;
+							} else {
+								// 正常
+								this.msg = response.data.msg;
+								this.errorMap = null;
+							}
+						})
+						
+						.catch(error => {
+							alert(error);
+						});
+					}
+				},
+				
+				mounted(){
+					axios.post('/option/slack/init')
+					.then(response => {
+						this.slackUrl = response.data.slackUrl;
+						this.slackUserName = response.data.slackUserName;
+						this.slackMsg = response.data.slackMsg;
+					});
+				}
+			}).mount('#main')
+		
+		</script>
+	</body>
+</html>
