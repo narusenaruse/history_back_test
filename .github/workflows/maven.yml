@@ -23,7 +23,7 @@ jobs:
         distribution: 'adopt'
         cache: maven
     - name: Build with Maven
-      run:  mvn -B package --file pom.xml
+      run:  mvn -B package --file history_back_test/pom.xml
     - name: mkdir artifact
       run: mkdir staging && cp target/*.jar staging
     - name: upload artifact
