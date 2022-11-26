@@ -40,7 +40,6 @@ class AnalysisRestTests {
 	MessageSource messageSource;
 
 	private static AnalysisRest analysisRest;
-
 	
 	
 	
