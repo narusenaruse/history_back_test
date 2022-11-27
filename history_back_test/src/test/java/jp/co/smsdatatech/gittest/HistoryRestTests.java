@@ -56,7 +56,7 @@ class HistoryRestTests {
 	@Test
 	public void initTest() throws Exception {
 		mockMvc.perform(post("/history/init"))
-		.andExpect(status().isOk());
+		.andExpect(status().is(400));
 	}
 
 	/**
@@ -66,7 +66,7 @@ class HistoryRestTests {
 	 */
 	@Test
 	public void selectNameTest() throws Exception {
-		mockMvc.perform(post("/history/selectName").param("chooseConsumerFromName", "テスト"))
+		mockMvc.perform(post("/history/selectName").param("chooseConsumerFromName", "テスト1"))
 		.andExpect(status().isOk());
 	}
 
