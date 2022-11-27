@@ -56,7 +56,7 @@ class HistoryRestTests {
 	@Test
 	public void initTest() throws Exception {
 		mockMvc.perform(post("/history/init"))
-		.andExpect(status().is(400));
+		.andExpect(status().isOk());
 	}
 
 	/**
